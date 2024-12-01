@@ -78,7 +78,7 @@ export default function Game() {
     setCurrentMove(nextMove)
     // setXIsNext(nextMove % 2 === 0)
   }
-  const moves = history.map((squares: (string | null)[], move: number) => {
+  const moves = history.map((_squares: (string | null)[], move: number) => {
     let description: string = ""
     if (move > 0)
       description = 'Go to move #' + move
