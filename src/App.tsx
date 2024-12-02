@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import "./App.css"
 
+type SquareContentType = string | null
 interface SquareProps {
   value: string | null
   onSquareClick: () => void
@@ -13,15 +15,15 @@ function Square({ value, onSquareClick }: SquareProps) {
 }
 interface BoardProps {
   xIsNext: boolean
-  squares: (string | null)[]
-  onPlay: (squares: (string | null)[]) => void
+  squares: SquareContentType[]
+  onPlay: (squares: SquareContentType[]) => void
 }
 function Board({ xIsNext, squares, onPlay }: BoardProps) {
   function handleClick(i: number) {
     if (calculateWinner(squares) || squares[i]) {
       return
     }
-    const nextSquares: (string | null)[] = squares.slice()
+    const nextSquares: SquareContentType[] = squares.slice()
     if (xIsNext) {
       nextSquares[i] = 'X'
     } else {
@@ -30,7 +32,7 @@ function Board({ xIsNext, squares, onPlay }: BoardProps) {
     onPlay(nextSquares);
   }
 
-  const winner: (string | null) = calculateWinner(squares)
+  const winner: SquareContentType = calculateWinner(squares)
   let status: string = ""
   if (winner) {
     status = 'Winner: ' + winner
@@ -41,44 +43,31 @@ function Board({ xIsNext, squares, onPlay }: BoardProps) {
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+      <div className="board">
+        {Array(9).fill(null).map((_, index: number) =>
+          <Square key={index} value={squares[index]} onSquareClick={() => handleClick(index)} />)}
       </div>
     </>
   )
 }
 
-export default function Game() {
+const Game = () => {
   const [history, setHistory] = useState([Array(9).fill(null)])
   const [currentMove, setCurrentMove] = useState(0)
-  // const [xIsNext, setXIsNext] = useState(true)
   const xIsNext: boolean = currentMove % 2 === 0
-  const currentSquares: (string | null)[] = history[currentMove]
+  const currentSquares: SquareContentType[] = history[currentMove]
 
-  function handlePlay(nextSquares: (string | null)[]) {
-    const nextHistory: (string | null)[][] = [...history.slice(0, currentMove + 1), nextSquares]
+  const handlePlay = (nextSquares: SquareContentType[]) => {
+    const nextHistory: SquareContentType[][] = [...history.slice(0, currentMove + 1), nextSquares]
     setHistory(nextHistory)
     setCurrentMove(nextHistory.length - 1)
-    // setXIsNext(!xIsNext)
   }
 
-  function jumpTo(nextMove: number) {
+  const jumpTo = (nextMove: number) => {
     setCurrentMove(nextMove)
-    // setXIsNext(nextMove % 2 === 0)
   }
-  const moves = history.map((_squares: (string | null)[], move: number) => {
+
+  const moves = history.map((_squares: SquareContentType[], move: number) => {
     let description: string = ""
     if (move > 0)
       description = 'Go to move #' + move
@@ -96,14 +85,14 @@ export default function Game() {
           onPlay={handlePlay}
         />
       </div>
-      <div className="game-info">
+      <div className="game-history">
         <ol>{moves}</ol>
       </div>
     </div>
   );
 }
 
-function calculateWinner(squares: (string | null)[]) {
+const calculateWinner = (squares: SquareContentType[]): SquareContentType => {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -123,3 +112,4 @@ function calculateWinner(squares: (string | null)[]) {
   return null;
 }
 
+export default Game
