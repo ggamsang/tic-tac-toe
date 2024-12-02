@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import "./App.css"
 
-type SquareContentType = string | null
+type SquareContentType = 'X' | 'O' | null
 interface SquareProps {
   value: string | null
   onSquareClick: () => void
@@ -51,6 +51,7 @@ function Board({ xIsNext, squares, onPlay }: BoardProps) {
   )
 }
 
+
 const Game = () => {
   const [history, setHistory] = useState([Array(9).fill(null)])
   const [currentMove, setCurrentMove] = useState(0)
@@ -77,11 +78,13 @@ const Game = () => {
       <button onClick={() => jumpTo(move)}>{description}</button>
     </li>
   })
+
   return (
     <div className="game">
       <div className="game-board">
         <Board
-          xIsNext={xIsNext} squares={currentSquares}
+          xIsNext={xIsNext}
+          squares={currentSquares}
           onPlay={handlePlay}
         />
       </div>
@@ -103,8 +106,8 @@ const calculateWinner = (squares: SquareContentType[]): SquareContentType => {
     [0, 4, 8],
     [2, 4, 6],
   ]
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i]
+  for (const line of lines) {
+    const [a, b, c] = line
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a]
     }
